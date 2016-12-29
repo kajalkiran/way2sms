@@ -47,9 +47,7 @@ INSTALLATION
 CONFIGURATION
 -------------
 * Configure sender's phone number and password at /admin/config/services/way2sms.
-* Add rule action Send SMS for the event you want the SMS to be sent.
-* Add phone number field to user account.
-
+* Add rule action : Send SMS, for the event you want the SMS to be sent.
 
 TROUBLESHOOTING
 ---------------
