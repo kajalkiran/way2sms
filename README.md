@@ -30,10 +30,10 @@ DEPENDENCIES
 ------------
 
 * Libraries (https://www.drupal.org/project/libraries)
-  This is a dependencies for way2SMS inorder to check the way2SMS API.
+  This is a dependency for way2SMS inorder to check the way2SMS API.
 
 * Rules (https://www.drupal.org/project/rules)
-  This is a dependencies for way2SMS as the way2SMS API is triggered with
+  This is a dependency for way2SMS as the way2SMS API is triggered with
   event, SMS action.
 
 INSTALLATION

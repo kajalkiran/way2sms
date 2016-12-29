@@ -31,3 +31,99 @@ function way2sms_menu() {
 
   return $items;
 }
+
+/**
+ * Login to way2sms.
+ */
+function _way2sms_login($username, $password) {
+  $lib_path = function_exists('libraries_get_path') ? libraries_get_path('way2sms') : 'sites/all/libraries/way2sms';
+  $platform = $lib_path . '/way2sms-api.php';
+  $client = NULL;
+  $result = NULL;
+  try {
+    include $platform;
+    if (!function_exists('sendWay2SMS') && !@include($platform)) {
+      watchdog('way2sms', 'Error Loading Way2SMS Library', [], WATCHDOG_ERROR);
+    }
+    else {
+      $client = new WAY2SMSClient();
+      $username = _way2sms_preprocess_contact_field($username);
+      if ($username && $password) {
+        $result = $client->login($username, $password);
+      }
+      else {
+        return NULL;
+      }
+      if ($result != 1) {
+        drupal_set_message(t("Invalid Credentials, make sure your number is registered at http://site24.way2sms.com/ and configured correct crendiatls at /admin/config/services/way2sms."), 'error');
+        return NULL;
+      }
+    }
+  }
+  catch (Exception $e) {
+    watchdog('way2sms', 'Error Loading Way2SMS Library', [], WATCHDOG_ERROR);
+    return NULL;
+  }
+
+  return $client;
+}
+
+/**
+ * Send SMS using way2sms api.
+ */
+function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact_field, $message) {
+  $result = NULL;
+
+  // Validate input.
+  if ($sender_phone_number && $sender_password && $reciever_contact_field && $message) {
+    // Login and instantiate WAY2SMSClient.
+    $client = _way2sms_login($sender_phone_number, $sender_password);
+    $reciever_contact_field = _way2sms_preprocess_contact_field($reciever_contact_field);
+    if ($client instanceof WAY2SMSClient) {
+      // Send Message.
+      try {
+        $result = $client->send($reciever_contact_field, $message);
+        $client->logout();
+      }
+      catch (Exception $e) {
+        watchdog('way2sms', 'Error sending message', [], WATCHDOG_ERROR);
+        return NULL;
+      }
+    }
+    else {
+      watchdog('way2sms', 'Error instantiating WAY2SMSClient', [], WATCHDOG_ERROR);
+    }
+  }
+  else {
+    watchdog('way2sms', 'Invalid input, error sending message', [], WATCHDOG_ERROR);
+  }
+  return $result;
+}
+
+/**
+ * Parse Contact Field.
+ */
+function _way2sms_preprocess_contact_field($contact_number) {
+  $contact_number = trim($contact_number);
+  // Check if contact_number is greater than 10 digits.
+  if (strlen($contact_number) == 10) {
+    return $contact_number;
+  }
+
+  // Check for +91 at the beginning.
+  $contact_number = preg_replace('/\A\+91/', '', $contact_number);
+
+  // Check for non-digit characters.
+  $contact_number = preg_replace('/\D/', '', $contact_number);
+
+  // Check for 0 at the beginning.
+  $contact_number = preg_replace('/\A0/', '', $contact_number);
+
+  if (strlen($contact_number) == 10) {
+    return $contact_number;
+  }
+  else {
+    drupal_set_message(t("Invalid Contact Number: @num", ['@num' => $contact_number]), 'error');
+    return FALSE;
+  }
+}
