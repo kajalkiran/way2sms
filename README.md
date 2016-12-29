@@ -13,7 +13,7 @@ CONTENTS OF THIS FILE
 INTRODUCTION
 ------------
 
-Way2SMS module with integration with rules module provides free SMS
+Way2SMS module is an integration with rules module which provides free SMS
 service to users in India using way2SMS API.
 
 MODULE DETAILS
@@ -40,7 +40,7 @@ INSTALLATION
 -------------
 
 * Download the way2SMS module.
-* Downlaod way2SMS API from (https://github.com/kingster/Way2SMS-API)
+* Download way2SMS API from (https://github.com/kingster/Way2SMS-API)
   and place it in sites/all/libraries/way2sms.
 * Enable the module.
 
