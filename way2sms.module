@@ -43,7 +43,7 @@ function _way2sms_login($username, $password) {
   $result = NULL;
   try {
     include $platform;
-    if (!function_exists('sendWay2SMS') && !@include($platform)) {
+    if (!function_exists('sendWay2SMS') && !@include $platform) {
       watchdog('way2sms', 'Error Loading Way2SMS Library', [], WATCHDOG_ERROR);
     }
     else {
