@@ -1,13 +1,12 @@
 <?php
+
 /**
  * @file
  * Way2SMS Configuration form settings.
  */
 
 /**
- * Configuration form to set
- * Sender's phone number and password
- * same as way2sms account.
+ * Configuration form to set credentials.
  */
 function way2sms_form($form, &$form_state) {
 

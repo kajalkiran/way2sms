@@ -19,12 +19,13 @@ service to users in India using way2sms API.
 MODULE DETAILS
 --------------
 
-This module uses an unofficial way2sms API(https://github.com/kingster/Way2SMS-API)
-in which it requires a sender's phone number which should be registered at
-way2sms(http://site24.way2sms.com/) before using this module. The same
-phone number and password is used to trigger the API. The receiver's phone
-number(may not be registered at way2sms) and message is configurable and can
-be used as per the requirements.
+This module uses an unofficial way2sms API
+(https://github.com/kingster/Way2SMS-API) in which it requires a sender's
+phone number which should be registered at way2sms
+(http://site24.way2sms.com/) before using this module.
+The same phone number and password is used to trigger the API. The
+receiver's phone number(may not be registered at way2sms) and message
+is configurable and can be used as per the requirements.
 
 DEPENDENCIES
 ------------
@@ -41,15 +42,17 @@ INSTALLATION
 
 * Download the way2SMS module.
 * Download way2SMS API from (https://github.com/kingster/Way2SMS-API)
-  and place it in sites/all/libraries/way2sms such that way2sms-api.php is
-  available as sites/all/libraries/way2sms/way2sms-api.php.
-* Enable the module and configure login credentials (Admin Mobile number and password).
+  and place it in sites/all/libraries/way2sms
+  such that way2sms-api.php is available as
+  sites/all/libraries/way2sms/way2sms-api.php.
+* Enable the module and configure login credentials(Admin Mobile number
+  and password).
 
 CONFIGURATIONS
 --------------
 * Configure sender's (admin) phone number and password at /admin/config/services/way2sms.
 * Create Rule as per your requirement and add way2sms action : Send SMS, for the event you
-want the SMS to be sent.
+  want the SMS to be sent.
 
 TROUBLESHOOTING
 ---------------
