@@ -25,7 +25,7 @@ function way2sms_menu() {
     'description' => "Way2SMS Configuration for Sender's so as to use it to send message through Way2SMS API.",
     'page callback' => 'drupal_get_form',
     'page arguments' => array('way2sms_form'),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer site configuration'),
     'file' => 'way2sms.form.inc',
     'type' => MENU_NORMAL_ITEM,
   );
