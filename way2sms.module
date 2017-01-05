@@ -34,7 +34,15 @@ function way2sms_menu() {
 }
 
 /**
- * Login to way2sms.
+ * Login to way2SMS.
+ *
+ * @param $username.
+ *   Sender's Phone number
+ * @param $password.
+ *   Sender's Password.
+ * @return $client;
+ *   Client object created at time of login.
+ * @throws Error Loading Way2SMS Library.
  */
 function _way2sms_login($username, $password) {
   $lib_path = function_exists('libraries_get_path') ? libraries_get_path('way2sms') : 'sites/all/libraries/way2sms';
@@ -70,16 +78,28 @@ function _way2sms_login($username, $password) {
 }
 
 /**
- * Send SMS using way2sms api.
+ * Send SMS.
+ *
+ * @param $sender_phone_number.
+ *   Sender's phone number configured at
+ *   admin/config/services/way2sms.
+ * @param $sender_password.
+ *   Sender's password configured at
+ *   admin/config/services/way2sms.
+ * @param $reciever_contact_field.
+ *   Reciever's phone number to which SMS is sent.
+ * @param $message.
+ *   Message to be sent can be configured in rules.
+ * @return sends message.
  */
 function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact_field, $message) {
   $result = NULL;
+  $reciever_contact_field = _way2sms_preprocess_contact_field($reciever_contact_field);
 
   // Validate input.
   if ($sender_phone_number && $sender_password && $reciever_contact_field && $message) {
     // Login and instantiate WAY2SMSClient.
     $client = _way2sms_login($sender_phone_number, $sender_password);
-    $reciever_contact_field = _way2sms_preprocess_contact_field($reciever_contact_field);
     if ($client instanceof WAY2SMSClient) {
       // Send Message.
       try {
@@ -103,8 +123,14 @@ function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact
 
 /**
  * Parse Contact Field.
+ *
+ * @param $contact_number
+ *   Prasing contact number to check
+ *   if its valid Indian number.
+ * @return valid contact number.
  */
 function _way2sms_preprocess_contact_field($contact_number) {
+  $number = $contact_number;
   $contact_number = trim($contact_number);
   // Check if contact_number is greater than 10 digits.
   if (strlen($contact_number) == 10) {
@@ -124,7 +150,7 @@ function _way2sms_preprocess_contact_field($contact_number) {
     return $contact_number;
   }
   else {
-    drupal_set_message(t("Invalid Contact Number: @num", ['@num' => $contact_number]), 'error');
+    drupal_set_message(t("Invalid Contact Number: @num", ['@num' => $number]), 'error');
     return FALSE;
   }
 }

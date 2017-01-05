@@ -8,13 +8,13 @@
 /**
  * Implements hook_rules_action_info().
  *
- * Declares any meta-data about actions for rules.
+ * Declares way2SMS actions for rules.
  */
 function way2sms_rules_action_info() {
   $actions = array(
     'way2sms_send_sms' => array(
       'label' => t('Send SMS'),
-      'group' => t('Wasy2SMS'),
+      'group' => t('Way2SMS'),
       'parameter' => array(
         '$reciever_contact_field' => array(
           'type' => 'text',
@@ -32,6 +32,14 @@ function way2sms_rules_action_info() {
 
 /**
  * The action function for 'way2sms_send_sms'.
+ *
+ * Send SMS via way2SMS.
+ *
+ * @param $reciever_contact_field.
+ *   Reciever's contact number to which SMS would be sent.
+ * @param $recievers_message.
+ *   Message to be sent to via way2SMS.
+ *
  */
 function way2sms_send_sms($reciever_contact_field, $recievers_message) {
   $result = _way2sms_send(
