@@ -5,4 +5,3 @@ configure = admin/config/services/way2sms
 
 dependencies[] = rules:rules
 dependencies[] = libraries:libraries
-

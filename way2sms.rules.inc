@@ -35,11 +35,10 @@ function way2sms_rules_action_info() {
  *
  * Send SMS via way2SMS.
  *
- * @param $reciever_contact_field.
+ * @param int $reciever_contact_field
  *   Reciever's contact number to which SMS would be sent.
- * @param $recievers_message.
+ * @param string $recievers_message
  *   Message to be sent to via way2SMS.
- *
  */
 function way2sms_send_sms($reciever_contact_field, $recievers_message) {
   $result = _way2sms_send(

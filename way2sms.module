@@ -36,13 +36,13 @@ function way2sms_menu() {
 /**
  * Login to way2SMS.
  *
- * @param $username.
- *   Sender's Phone number
- * @param $password.
- *   Sender's Password.
- * @return $client;
+ * @param string $username
+ *   Username is sender's contact number.
+ * @param string $password
+ *   Password is sender's way2sms password.
+ *
+ * @return client
  *   Client object created at time of login.
- * @throws Error Loading Way2SMS Library.
  */
 function _way2sms_login($username, $password) {
   $lib_path = function_exists('libraries_get_path') ? libraries_get_path('way2sms') : 'sites/all/libraries/way2sms';
@@ -80,17 +80,19 @@ function _way2sms_login($username, $password) {
 /**
  * Send SMS.
  *
- * @param $sender_phone_number.
+ * @param int $sender_phone_number
  *   Sender's phone number configured at
  *   admin/config/services/way2sms.
- * @param $sender_password.
+ * @param string $sender_password
  *   Sender's password configured at
  *   admin/config/services/way2sms.
- * @param $reciever_contact_field.
+ * @param int $reciever_contact_field
  *   Reciever's phone number to which SMS is sent.
- * @param $message.
+ * @param string $message
  *   Message to be sent can be configured in rules.
- * @return sends message.
+ *
+ * @return result
+ *   sends message.
  */
 function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact_field, $message) {
   $result = NULL;
@@ -124,10 +126,12 @@ function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact
 /**
  * Parse Contact Field.
  *
- * @param $contact_number
+ * @param int $contact_number
  *   Prasing contact number to check
  *   if its valid Indian number.
- * @return valid contact number.
+ *
+ * @return contact_number
+ *   valid contact number.
  */
 function _way2sms_preprocess_contact_field($contact_number) {
   $number = $contact_number;

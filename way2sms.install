@@ -11,7 +11,7 @@
 function way2sms_install() {
   $installed = get_t();
   drupal_set_message($installed("Way2SMS Module settings are available under !link",
-    array( '!link' => l($installed('Administration » Configuration » Web services'),  'admin/config/services/way2sms'))
+    array('!link' => l($installed('Administration » Configuration » Web services'), 'admin/config/services/way2sms'))
   ));
 }
 
