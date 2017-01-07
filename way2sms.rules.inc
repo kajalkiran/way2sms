@@ -16,11 +16,11 @@ function way2sms_rules_action_info() {
       'label' => t('Send SMS'),
       'group' => t('Way2SMS'),
       'parameter' => array(
-        '$reciever_contact_field' => array(
+        'reciever_contact_field' => array(
           'type' => 'text',
           'label' => t("Reciever's Contact Number."),
         ),
-        '$recievers_message' => array(
+        'recievers_message' => array(
           'type' => 'text',
           'label' => t('Message for reciever'),
         ),
