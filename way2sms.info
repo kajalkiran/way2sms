@@ -1,8 +1,0 @@
-name = Way2SMS
-description = Module integrates way2sms service using rules.
-core = 7.x
-configure = admin/config/services/way2sms
-
-dependencies[] = rules
-dependencies[] = libraries
-package = Way2SMS

@@ -1,50 +1,26 @@
 <?php
 
 /**
- * @file
- * Way2SMS Module Implementation.
+ * Login to way2SMS.
+ *
+ * @param string $username
+ *   Username is sender's contact number.
+ * @param string $password
+ *   Password is sender's way2sms password.
+ *
+ * @return client
+ *   Client object created at time of login.
  */
-
-/**
- * Implements hook_help().
- */
-function way2sms_help($path, $arg) {
-  switch ($path) {
-    case 'admin/help#way2sms':
-      $output = file_get_contents(drupal_get_path('module', 'Way2SMS') . '/README.md');
-      return module_exists('markdown') ? filter_xss_admin(module_invoke('markdown', 'filter', 'process', 0, -1, $output)) : '<pre>' . check_plain($output) . '</pre>';
-  }
-}
-
-/**
- * Implements hook_menu().
- */
-function way2sms_menu() {
-  $items['admin/config/services/way2sms'] = array(
-    'title' => 'Way2SMS Configuration',
-    'description' => "Way2SMS Configuration for Sender's so as to use it to send message through Way2SMS API.",
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('way2sms_form'),
-    'access arguments' => array('access administration pages'),
-    'file' => 'way2sms.form.inc',
-    'type' => MENU_NORMAL_ITEM,
-  );
-
-  return $items;
-}
-
-/**
- * Login to way2sms.
- */
-function _way2sms_login($username, $password) {
-  $lib_path = function_exists('libraries_get_path') ? libraries_get_path('way2sms') : 'sites/all/libraries/way2sms';
+function _way2sms_login($username, $password){
+  $lib_path = (function_exists('libraries_get_path')) ? libraries_get_path('way2sms') : 'libraries/way2sms';
   $platform = $lib_path . '/way2sms-api.php';
+  dsm($platform);
   $client = NULL;
   $result = NULL;
   try {
     include $platform;
-    if (!function_exists('sendWay2SMS') && !@include($platform)) {
-      watchdog('way2sms', 'Error Loading Way2SMS Library', [], WATCHDOG_ERROR);
+    if (!function_exists('sendWay2SMS') && !@include $platform) {
+      \Drupal::logger('way2sms')->error('Error Loading Way2SMS Library');
     }
     else {
       $client = new WAY2SMSClient();
@@ -62,49 +38,24 @@ function _way2sms_login($username, $password) {
     }
   }
   catch (Exception $e) {
-    watchdog('way2sms', 'Error Loading Way2SMS Library', [], WATCHDOG_ERROR);
+    \Drupal::logger('way2sms')->error('Error Loading Way2SMS Library');
     return NULL;
   }
-
   return $client;
 }
 
 /**
- * Send SMS using way2sms api.
- */
-function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact_field, $message) {
-  $result = NULL;
-
-  // Validate input.
-  if ($sender_phone_number && $sender_password && $reciever_contact_field && $message) {
-    // Login and instantiate WAY2SMSClient.
-    $client = _way2sms_login($sender_phone_number, $sender_password);
-    $reciever_contact_field = _way2sms_preprocess_contact_field($reciever_contact_field);
-    if ($client instanceof WAY2SMSClient) {
-      // Send Message.
-      try {
-        $result = $client->send($reciever_contact_field, $message);
-        $client->logout();
-      }
-      catch (Exception $e) {
-        watchdog('way2sms', 'Error sending message', [], WATCHDOG_ERROR);
-        return NULL;
-      }
-    }
-    else {
-      watchdog('way2sms', 'Error instantiating WAY2SMSClient', [], WATCHDOG_ERROR);
-    }
-  }
-  else {
-    watchdog('way2sms', 'Invalid input, error sending message', [], WATCHDOG_ERROR);
-  }
-  return $result;
-}
-
-/**
  * Parse Contact Field.
+ *
+ * @param int $contact_number
+ *   Prasing contact number to check
+ *   if its valid Indian number.
+ *
+ * @return contact_number
+ *   valid contact number.
  */
 function _way2sms_preprocess_contact_field($contact_number) {
+  $number = $contact_number;
   $contact_number = trim($contact_number);
   // Check if contact_number is greater than 10 digits.
   if (strlen($contact_number) == 10) {
@@ -124,7 +75,57 @@ function _way2sms_preprocess_contact_field($contact_number) {
     return $contact_number;
   }
   else {
-    drupal_set_message(t("Invalid Contact Number: @num", ['@num' => $contact_number]), 'error');
+    drupal_set_message(t("Invalid Contact Number: @num", ['@num' => $number]), 'error');
     return FALSE;
   }
+}
+
+/**
+ * Send SMS.
+ *
+ * @param int $sender_phone_number
+ *   Sender's phone number configured at
+ *   admin/config/services/way2sms.
+ * @param string $sender_password
+ *   Sender's password configured at
+ *   admin/config/services/way2sms.
+ * @param int $reciever_contact_field
+ *   Reciever's phone number to which SMS is sent.
+ * @param string $message
+ *   Message to be sent can be configured in rules.
+ *
+ * @return result
+ *   sends message.
+ */
+function _way2sms_send($sender_phone_number, $sender_password, $reciever_contact_field, $message) {
+  $result = NULL;
+  $reciever_contact_field = _way2sms_preprocess_contact_field($reciever_contact_field);
+
+  // Validate input.
+  if ($sender_phone_number && $sender_password && $reciever_contact_field && $message) {
+    // Login and instantiate WAY2SMSClient.
+    $client = _way2sms_login($sender_phone_number, $sender_password);
+    if ($client instanceof WAY2SMSClient) {
+      // Send Message.
+      try {
+        $result = $client->send($reciever_contact_field, $message);
+        $client->logout();
+      }
+      catch (Exception $e) {
+        watchdog_exception('way2sms', $e);
+        return NULL;
+      }
+    }
+    else {
+      \Drupal::logger('way2sms')->error('Error instantiating WAY2SMSClient');
+    }
+  }
+  else {
+    \Drupal::logger('way2sms')->error("Invalid input, Sender's phone number : @admin_number
+    Sender's password : @admin_password, Reciever's phone number : @reciever_number
+    For Message : @message", array('@admin_number' => $sender_phone_number,
+      '@admin_password' => "", '@reciever_number' => $reciever_contact_field,
+      '@message' => $message));
+  }
+  return $result;
 }
